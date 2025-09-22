@@ -88,7 +88,10 @@ function completion.get_completion_for_client(context, client, opts)
   -- If any are marked as incomplete, we must tell blink.cmp, but this will cause a fetch on every keystroke
   -- So we cache the responses and only re-request completions from isIncomplete = true clients
   local cache_entry = cache.get(context, client)
-  if cache_entry ~= nil then return async.task.identity(cache_entry) end
+  -- if cache_entry ~= nil then return async.task.identity(cache_entry) end
+  if cache_entry ~= nil and (not opts.is_vue or (client.name ~= 'vtsls' and client.name ~= 'vue_ls')) then
+    return async.task.identity(cache_entry)
+  end
 
   return request(context, client):map(function(res)
     if res.err or res.result == nil then

@@ -62,6 +62,10 @@ function lsp:get_completions(context, callback)
     vim.lsp.get_clients({ bufnr = 0, method = 'textDocument/completion' })
   )
   clients = vim.tbl_map(wrap_client, clients)
+  table.sort(clients, function(a, b) return a.name == 'vue_ls' and b.name ~= 'vue_ls' end)
+  local hasVue = false
+  if clients ~= nil and #clients > 0 and clients[1].name == 'vue_ls' then hasVue = true end
+  if hasVue then self.opts.is_vue = true end
 
   -- TODO: implement a timeout before returning the menu as-is. In the future, it would be neat
   -- to detect slow LSPs and consistently run them async
